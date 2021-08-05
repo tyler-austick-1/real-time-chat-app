@@ -1,0 +1,16 @@
+#main-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#main-task-bar {
+    height: 8%;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 92%;
+}

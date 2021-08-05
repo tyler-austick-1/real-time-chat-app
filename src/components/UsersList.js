@@ -1,29 +1,15 @@
 import React from 'react'
 import '../css/UsersList.css';
 
-export default function UsersList() {
-    // take in props for the users
+export default function UsersList(props) {
+    //replace key with user id
+    const listItems = props.users.map(user => <div key={user}><p>{user}</p><br></br></div>);
     return (
         <div id="users-list">
+            <br></br>
             <h3>Users</h3>
-            <p>Tom</p>
-            <p>Bob</p>
-            <p>Mike</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
-            <p>Samantha</p>
+            <br></br>
+            {listItems}
         </div>
     )
 }

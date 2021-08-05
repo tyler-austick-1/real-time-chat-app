@@ -5,7 +5,7 @@
 }
 
 #message-window {
-    background-color: lightgrey;
+    background-color: #f2fcff;
     height: 92%;
     overflow-y: auto;
 }
