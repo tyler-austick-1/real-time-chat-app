@@ -1,0 +1,29 @@
+#chat-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    height: 8%;
+}
+
+#chat-form form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    height: 50%;
+}
+
+#chat-input {
+    width: 88%;
+}
+
+#send-button {
+    width: 8%;
+}
+
+#send-button:hover {
+    cursor: pointer;
+}

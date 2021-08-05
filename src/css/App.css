@@ -1,0 +1,29 @@
+:root {
+    --lightest-blue: #EEF8FF;
+    --light-blue: #D1F5FF;
+    --sky-blue: #78E3FD;
+    --neon-blue: #34F6F2;
+    --almost-purple: #7D53DE;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+#main-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#main-task-bar {
+    height: 8%;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 92%;
+}

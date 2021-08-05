@@ -1,0 +1,19 @@
+#users-list {
+    display: inline-flex;
+    flex-direction: column;
+    background-color: var(--light-blue);
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 15%;
+    height: 100%;
+}
+
+#users-list h3 {
+    padding-left: 10px;
+    padding-right: 100px;
+}
+
+#users-list p {
+    padding-left: 10px;
+}
