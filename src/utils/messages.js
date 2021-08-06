@@ -1,7 +1,8 @@
 const luxon = require('luxon');
 
-function formatMessage(username, text) {
+function formatMessage(id, username, text) {
     return {
+        id,
         username,
         text,
         time: luxon.DateTime.now().toLocaleString(luxon.DateTime.DATETIME_MED)

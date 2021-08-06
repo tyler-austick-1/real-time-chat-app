@@ -4,15 +4,20 @@
     justify-content: space-between;
     background-color: greenyellow;
     width: 30%;
-    /* height: 25%; */
     position: relative;
-    top: 30px;
-    left: 50px;
-    right: 30px;
-    bottom: 30px;
+    top: 3%;
+    left: 3%;
+    right: 3%;
+    bottom: 3%;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 15px;
+}
+
+.chat-bubble.user-bubble {
+    background-color: aqua;
+    left: 65%;
+    right: 3%;
 }
 
 .username-text {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../css/ChatBar.css';
 
-export default function ChatBar() {
+export default function ChatBar({socket}) {
     const [chatText, setChatText] = useState('');
 
     function handleChange(event) {
@@ -10,10 +10,9 @@ export default function ChatBar() {
 
     function handleSubmit(event) {
         event.preventDefault();
-
         if (chatText === '') return;
 
-        alert(`Message sent: ${chatText}`);
+        socket.emit('message', chatText);
         setChatText('');
     }
 
