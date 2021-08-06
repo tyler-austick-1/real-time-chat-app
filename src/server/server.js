@@ -10,7 +10,6 @@ const app = express();
 
 const httpServer = http.createServer(app);
 const options = {cors: {origin: "*"}};  // allows any url to connect to the server
-const options = {};
 const io = socketIo(httpServer, options);
 
 const botName = 'Server Bot';

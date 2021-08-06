@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../css/ChatRoom.css";
 import UsersList from './UsersList';
 import ChatWindow from './ChatWindow';
@@ -12,15 +12,31 @@ export default function ChatRoom() {
   const {username, room} = QueryString.parse(window.location.search, {
     ignoreQueryPrefix: true
   });
+
+  const [messages, setMessages] = useState([]);
+  const [currentUsers, setCurrentUsers] = useState([]);
+
+  // let socket;
   
-  // UNCOMMENT THIS TOMORROW
-  // useEffect(() => {
-  //   const socket = socketIOClient(ENDPOINT);
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    console.log('connected to socket');
 
-  //   // code goes here
+    socket.emit('joinRoom', {username, room});
 
-  //   return () => socket.disconnect();
-  // }, []);
+    socket.on('message', message => {
+      let temp = messages;
+      temp.push(message);
+      setMessages([...temp]);
+    });
+
+    socket.on('roomUsers', ({room, users}) => {
+      const usernameList = users.map(user => user.username);
+      setCurrentUsers([...usernameList]);
+    });
+
+    return () => socket.disconnect();
+  }, []);
 
   return (
     <div id="main-app">
@@ -28,8 +44,8 @@ export default function ChatRoom() {
         <TaskBar room={room} />
       </div>
       <div id="main-content">
-        <UsersList users={["Tyler", "Mike", "Sam"]} />
-        <ChatWindow />
+        <UsersList users={currentUsers} />
+        <ChatWindow messages={messages}/>
       </div>
     </div>
   );

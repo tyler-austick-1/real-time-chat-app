@@ -2,19 +2,14 @@ import React from 'react';
 import '../css/ChatWindow.css';
 import ChatBar from './ChatBar';
 import ChatBubble from './ChatBubble';
+import { v4 as uuidv4} from 'uuid';
 
 export default function ChatWindow(props) {
-    // props.messages
+    const mappedMessages = props.messages.map(message => <ChatBubble key={uuidv4()} username={message.username} message={message.text} dateTime={message.time}/>);
     return (
         <div id="chat-window">
             <div id="message-window">
-                <ChatBubble username="Tyler" message="Let's hope this shit works" dateTime="5/8/2021 15:28" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
-                <ChatBubble username="Bob" message="Looks like it's working" dateTime="5/8/2021 18:25" />
+                {mappedMessages}
             </div>
             <ChatBar />
         </div>
