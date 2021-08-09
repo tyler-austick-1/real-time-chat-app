@@ -1,16 +1,10 @@
 #chat-window {
-    background-color: var(--lightest-blue);
     width: 85%;
     height: 100%;
 }
 
 #message-window {
-    background-color: #f2fcff;
+    background-color: var(--almost-black);
     height: 92%;
     overflow-y: auto;
-}
-
-#chat-bar-window {
-    border-top: 1px solid lightgray;
-    height: 8% - 1px;
 }

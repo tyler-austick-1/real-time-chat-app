@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: greenyellow;
+    background-color: var(--others-color);
     width: 30%;
     position: relative;
     top: 3%;
@@ -15,7 +15,7 @@
 }
 
 .chat-bubble.user-bubble {
-    background-color: aqua;
+    background-color: var(--sender-color);
     left: 65%;
     right: 3%;
 }

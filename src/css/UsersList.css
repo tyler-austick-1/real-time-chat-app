@@ -1,12 +1,13 @@
 #users-list {
     display: inline-flex;
     flex-direction: column;
-    background-color: var(--light-blue);
+    background-color: var(--medium-gray);
     justify-content: flex-start;
     overflow-x: auto;
     overflow-y: auto;
     width: 15%;
     height: 100%;
+    color: white;
 }
 
 #users-list h3 {
