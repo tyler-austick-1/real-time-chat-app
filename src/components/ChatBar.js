@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../css/ChatBar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 export default function ChatBar({socket}) {
     const [chatText, setChatText] = useState('');
@@ -20,7 +22,9 @@ export default function ChatBar({socket}) {
         <div id="chat-form">
             <form onSubmit={handleSubmit}>
                 <input id="chat-input" type="text" value={chatText} onChange={handleChange} autoComplete="off"></input>
-                <input id="send-button" type="submit" value="Send"></input>
+                <button id="send-button" type="submit">
+                    <FontAwesomeIcon id="send-icon" icon={faPaperPlane} size="lg"/>
+                </button>
             </form>
         </div>
     );

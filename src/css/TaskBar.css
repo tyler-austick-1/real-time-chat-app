@@ -25,3 +25,15 @@
 #task-bar button:hover {
     cursor: pointer;
 }
+
+#leave-room-icon {
+    color: white;
+    padding: 20px;
+    margin-right: 10px;
+    font-size: 30px;
+}
+
+#leave-room-icon:hover {
+    cursor: pointer;
+    color: red;
+}

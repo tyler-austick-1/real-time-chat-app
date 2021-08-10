@@ -19,12 +19,18 @@
 
 #chat-input {
     width: 88%;
+    border: none;
 }
 
 #send-button {
     width: 8%;
+    border: none;
+    border-left: 1px solid var(--inbetween-gray);
 }
 
 #send-button:hover {
     cursor: pointer;
+    background-color: var(--sender-color);
+    color: white;
+    border: none;
 }
