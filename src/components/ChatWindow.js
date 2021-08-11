@@ -12,6 +12,7 @@ export default function ChatWindow({ socket }) {
     chatWindowEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
+  // ADD MESSAGES AS A DEPENDENCY AND YOU SHOULD BE ABLE TO CHANGE TO NEW ARRAY DEFINITION
   useEffect(() => {
     socket.on("message", (message) => {
       let temp = messages;

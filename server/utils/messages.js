@@ -1,8 +1,9 @@
 const luxon = require('luxon');
 
-function formatMessage(id, username, text) {
+// MIGHT NEED TO ADD ROOM
+function formatMessage(userId, username, text) {
     return {
-        id,
+        userId,
         username,
         text,
         time: luxon.DateTime.now().toLocaleString(luxon.DateTime.DATETIME_MED)
