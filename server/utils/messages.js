@@ -1,13 +1,23 @@
 const luxon = require('luxon');
 
 // MIGHT NEED TO ADD ROOM
-function formatMessage(userId, username, text) {
+function formatMessage(userId, username, text, date) {
     return {
         userId,
         username,
         text,
-        time: luxon.DateTime.now().toLocaleString(luxon.DateTime.DATETIME_MED)
+        time: luxon.DateTime.fromJSDate(date).toLocaleString(luxon.DateTime.DATETIME_MED)
     }
 }
 
-module.exports = formatMessage;
+function formatMessageForDb(user_id, username, room, message) {
+    return {
+        user_id,
+        username,
+        room,
+        message,
+        timestamp: Date.now()
+    }
+}
+
+module.exports = {formatMessage, formatMessageForDb};

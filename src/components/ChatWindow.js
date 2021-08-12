@@ -15,6 +15,7 @@ export default function ChatWindow({ socket }) {
   // ADD MESSAGES AS A DEPENDENCY AND YOU SHOULD BE ABLE TO CHANGE TO NEW ARRAY DEFINITION
   useEffect(() => {
     socket.on("message", (message) => {
+      console.log('New message received!');
       let temp = messages;
       temp.push(message);
       setMessages([...temp]);
