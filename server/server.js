@@ -6,6 +6,7 @@ const {formatMessage, formatMessageForDb} = require('./utils/messages');
 const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require('./utils/users');
 const mongoose = require('mongoose');
 const messageModel = require('./utils/messageModel');
+const { exec } = require('child_process');
 
 const app = express();
 
@@ -34,6 +35,7 @@ mongoose.connect(connectionURL, databaseOptions);
 
 const db = mongoose.connection;
 
+// Adds event listeners when db connection is opened 
 db.once('open', () => {
     console.log('Connected to database!');
 
@@ -60,9 +62,18 @@ io.on('connection', socket => {
     socket.on('joinRoom', ({username, room}) => {
         const user = userJoin(socket.id, username, room);
         socket.join(user.room);
-        
-        socket.emit('message', formatMessage(botId, botName, 'Welcome to the chat room!', new Date()));
-        socket.broadcast.to(user.room).emit('message', formatMessage(botId, botName, `${user.username} has joined the chat`, new Date()));
+
+        const roomMessagesQuery = messageModel.find({ room: user.room }).exec();
+
+        roomMessagesQuery.then(data => {
+            const loadedMessages = data.map(m => formatMessage(m.user_id, m.username, m.message, m.timestamp));
+
+            socket.emit('loadedMessages', loadedMessages);
+            sendBotMessages(socket, user);
+        }).catch(error => {
+            socket.emit('error', 'Previous messages could not be loaded :(');
+            sendBotMessages(socket, user);
+        });
         
         io.to(user.room).emit('roomUsers', {
             room: user.room,
@@ -95,7 +106,13 @@ io.on('connection', socket => {
     });
 });
 
-// api routes
+// Helper methods
+function sendBotMessages(socket, user) {
+    socket.emit('message', formatMessage(botId, botName, 'Welcome to the chat room!', new Date()));
+    socket.broadcast.to(user.room).emit('message', formatMessage(botId, botName, `${user.username} has joined the chat`, new Date()));
+}
+
+// API routes
 app.post('/api/messages', (req, res) => {
     const messageData = req.body;
 
@@ -108,6 +125,14 @@ app.post('/api/messages', (req, res) => {
 
 app.get('/api/messages', (req, res) => {
     messageModel.find((err, data) => {
+        if (err) return res.status(500).send(err);
+
+        return res.status(200).send(data);
+    });
+});
+
+app.get('/api/messages/:room', (req, res) => {
+    messageModel.find({ room: req.params.room }, (err, data) => {
         if (err) return res.status(500).send(err);
 
         return res.status(200).send(data);

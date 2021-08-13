@@ -14,15 +14,25 @@ export default function ChatWindow({ socket }) {
 
   // ADD MESSAGES AS A DEPENDENCY AND YOU SHOULD BE ABLE TO CHANGE TO NEW ARRAY DEFINITION
   useEffect(() => {
-    socket.on("message", (message) => {
-      console.log('New message received!');
-      let temp = messages;
-      temp.push(message);
-      setMessages([...temp]);
+    socket.on('loadedMessages', loadedMessages => {
+      console.log('Messages loaded.');
+
+      setMessages(loadedMessages);
+    });
+
+    socket.on('error', error => {
+      // REPLACE WITH AN ERROR COMPONENT INSIDE THE CHAT WINDOW
+      console.error(error);
     });
 
     return () => socket.disconnect();
   }, [socket]);
+
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages([...messages, message]);
+    });
+  }, [socket, messages]);
 
   useEffect(scrollToBottom, [messages]);
 
