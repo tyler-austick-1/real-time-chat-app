@@ -1,14 +1,28 @@
-const path = require('path');
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const {formatMessage, formatMessageForDb} = require('./utils/messages');
-const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require('./utils/users');
-const mongoose = require('mongoose');
-const messageModel = require('./utils/messageModel');
-const { exec } = require('child_process');
+const path = require("path");
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const { formatMessage, formatMessageForDb } = require("./utils/messages");
+const {
+  userJoin,
+  getCurrentUser,
+  userLeave,
+  getRoomUsers,
+} = require("./utils/users");
+const mongoose = require("mongoose");
+const messageModel = require("./utils/messageModel");
+const admin = require("firebase-admin");
 
 const app = express();
+// admin.initializeApp({
+//   credential: admin.credential.applicationDefault(),
+// //   projectId: `real-time-chat-app-2887d`,
+// });
+
+// admin.auth()
+//   .getUser("2Yw5Numj7WNUXEREkOS8I1xDPja2")
+//   .then((userRecord) => console.log(`Success! User data: ${userRecord}`))
+//   .catch((error) => console.log(`An error has occured :( ${error}`));
 
 // Middlewares
 app.use(express.json());
@@ -16,18 +30,19 @@ app.use(express.json());
 // app.use(express.static('public'));
 
 const httpServer = http.createServer(app);
-const options = {cors: {origin: "*"}};  // allows any url to connect to the server
+const options = { cors: { origin: "*" } }; // allows any url to connect to the server
 const io = socketIo(httpServer, options);
 
-const botName = 'Server Bot';
-const botId = '';
+const botName = "Server Bot";
+const botId = "";
 
 // Database stuff
-const connectionURL = 'mongodb+srv://admin:iluEzLM0RpwtcvhC@cluster0.mzxqx.mongodb.net/chatAppDatabase?retryWrites=true&w=majority';
+const connectionURL =
+  "mongodb+srv://admin:iluEzLM0RpwtcvhC@cluster0.mzxqx.mongodb.net/chatAppDatabase?retryWrites=true&w=majority";
 const databaseOptions = {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  useCreateIndex: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 };
 
 // Connects to the database
@@ -35,114 +50,153 @@ mongoose.connect(connectionURL, databaseOptions);
 
 const db = mongoose.connection;
 
-// Adds event listeners when db connection is opened 
-db.once('open', () => {
-    console.log('Connected to database!');
+// Adds event listeners when db connection is opened
+db.once("open", () => {
+  console.log("Connected to database!");
 
-    const messagesCollection = db.collection('messages');
-    const changeStream = messagesCollection.watch();
+  const messagesCollection = db.collection("messages");
+  const changeStream = messagesCollection.watch();
 
-    changeStream.on('change', (change) => {
-        if (change.operationType === 'insert') {
-            const messageContents = change.fullDocument;
-            const user = getCurrentUser(messageContents.user_id);
-            
-            if (user !== undefined) {
-                io.to(user.room).emit('message', formatMessage(messageContents.user_id, messageContents.username, messageContents.message, messageContents.timestamp));
-            } else {
-                console.log('Error emitting message :(');
-            }
-        } 
-    });
+  changeStream.on("change", (change) => {
+    if (change.operationType === "insert") {
+      const messageContents = change.fullDocument;
+      const user = getCurrentUser(messageContents.user_id);
+
+      if (user !== undefined) {
+        io.to(user.room).emit(
+          "message",
+          formatMessage(
+            messageContents.user_id,
+            messageContents.username,
+            messageContents.message,
+            messageContents.timestamp
+          )
+        );
+      } else {
+        console.log("Error emitting message :(");
+      }
+    }
+  });
 });
 
 // Socket.io stuff
-io.on('connection', socket => {
-    
-    socket.on('joinRoom', ({username, room}) => {
-        const user = userJoin(socket.id, username, room);
-        socket.join(user.room);
+io.on("connection", (socket) => {
+  socket.on("joinRoom", ({ username, room }) => {
+    const user = userJoin(socket.id, username, room);
+    socket.join(user.room);
 
-        const roomMessagesQuery = messageModel.find({ room: user.room }).exec();
+    const roomMessagesQuery = messageModel.find({ room: user.room }).exec();
 
-        roomMessagesQuery.then(data => {
-            const loadedMessages = data.map(m => formatMessage(m.user_id, m.username, m.message, m.timestamp));
+    roomMessagesQuery
+      .then((data) => {
+        const loadedMessages = data.map((m) =>
+          formatMessage(m.user_id, m.username, m.message, m.timestamp)
+        );
 
-            socket.emit('loadedMessages', loadedMessages);
-            sendBotMessages(socket, user);
-        }).catch(error => {
-            socket.emit('error', 'Previous messages could not be loaded :(');
-            sendBotMessages(socket, user);
-        });
-        
-        io.to(user.room).emit('roomUsers', {
-            room: user.room,
-            users: getRoomUsers(user.room)
-        }); 
+        socket.emit("loadedMessages", loadedMessages);
+        sendBotMessages(socket, user);
+      })
+      .catch((error) => {
+        socket.emit("error", "Previous messages could not be loaded :(");
+        sendBotMessages(socket, user);
+      });
+
+    io.to(user.room).emit("roomUsers", {
+      room: user.room,
+      users: getRoomUsers(user.room),
     });
+  });
 
-    socket.on('message', message => {
-        const user = getCurrentUser(socket.id);
-        const formattedMessage = formatMessageForDb(user.id, user.username, user.room, message);
+  socket.on("message", (message) => {
+    const user = getCurrentUser(socket.id);
+    const formattedMessage = formatMessageForDb(
+      user.id,
+      user.username,
+      user.room,
+      message
+    );
 
-        messageModel.create(formattedMessage, (err, data) => {
-            if (err) return console.log(`An error has occured...${err}`);
+    messageModel.create(formattedMessage, (err, data) => {
+      if (err) return console.log(`An error has occured...${err}`);
 
-            console.log(`Message saved successfully`);
-        });
+      console.log(`Message saved successfully`);
     });
+  });
 
-    socket.on('disconnect', () => {
-        const user = userLeave(socket.id);
+  socket.on("disconnect", () => {
+    const user = userLeave(socket.id);
 
-        if (user) {
-            io.to(user.room).emit('message', formatMessage(botId, botName, `${user.username} has left the chat`, new Date()));
-            
-            io.to(user.room).emit('roomUsers', {
-                room: user.room,
-                users: getRoomUsers(user.room)
-            }); 
-        }
-    });
+    if (user) {
+      io.to(user.room).emit(
+        "message",
+        formatMessage(
+          botId,
+          botName,
+          `${user.username} has left the chat`,
+          new Date()
+        )
+      );
+
+      io.to(user.room).emit("roomUsers", {
+        room: user.room,
+        users: getRoomUsers(user.room),
+      });
+    }
+  });
 });
 
 // Helper methods
 function sendBotMessages(socket, user) {
-    socket.emit('message', formatMessage(botId, botName, 'Welcome to the chat room!', new Date()));
-    socket.broadcast.to(user.room).emit('message', formatMessage(botId, botName, `${user.username} has joined the chat`, new Date()));
+  socket.emit(
+    "message",
+    formatMessage(botId, botName, "Welcome to the chat room!", new Date())
+  );
+  socket.broadcast
+    .to(user.room)
+    .emit(
+      "message",
+      formatMessage(
+        botId,
+        botName,
+        `${user.username} has joined the chat`,
+        new Date()
+      )
+    );
 }
 
 // API routes
-app.post('/api/messages', (req, res) => {
-    const messageData = req.body;
+app.post("/api/messages", (req, res) => {
+  const messageData = req.body;
 
-    messageModel.create(messageData, (err, data) => {
-        if (err) return res.status(500).send(err);
+  messageModel.create(messageData, (err, data) => {
+    if (err) return res.status(500).send(err);
 
-        return res.status(201).send(data);
-    });
+    return res.status(201).send(data);
+  });
 });
 
-app.get('/api/messages', (req, res) => {
-    messageModel.find((err, data) => {
-        if (err) return res.status(500).send(err);
+app.get("/api/messages", (req, res) => {
+  messageModel.find((err, data) => {
+    if (err) return res.status(500).send(err);
 
-        return res.status(200).send(data);
-    });
+    return res.status(200).send(data);
+  });
 });
 
-app.get('/api/messages/:room', (req, res) => {
-    messageModel.find({ room: req.params.room }, (err, data) => {
-        if (err) return res.status(500).send(err);
+app.get("/api/messages/:room", (req, res) => {
+  messageModel.find({ room: req.params.room }, (err, data) => {
+    if (err) return res.status(500).send(err);
 
-        return res.status(200).send(data);
-    });
+    return res.status(200).send(data);
+  });
 });
 
 // If no api route is found, then pass the request to the react app
 app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 });
 
 const port = process.env.PORT || 5000;
-httpServer.listen(port, () => console.log(`Listening on http://localhost:${port}`));
+httpServer.listen(port, () =>
+  console.log(`Listening on http://localhost:${port}`)
+);
