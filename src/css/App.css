@@ -19,3 +19,6 @@ body {
     position: relative;
 }
 
+.text-field {
+    padding-left: 4px;
+}

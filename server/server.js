@@ -3,34 +3,19 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const { formatMessage, formatMessageForDb } = require("./utils/messages");
-const {
-  userJoin,
-  getCurrentUser,
-  userLeave,
-  getRoomUsers,
-} = require("./utils/users");
+const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require("./utils/users");
 const mongoose = require("mongoose");
 const messageModel = require("./utils/messageModel");
-const admin = require("firebase-admin");
 
 const app = express();
-// admin.initializeApp({
-//   credential: admin.credential.applicationDefault(),
-// //   projectId: `real-time-chat-app-2887d`,
-// });
-
-// admin.auth()
-//   .getUser("2Yw5Numj7WNUXEREkOS8I1xDPja2")
-//   .then((userRecord) => console.log(`Success! User data: ${userRecord}`))
-//   .catch((error) => console.log(`An error has occured :( ${error}`));
 
 // Middlewares
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, '..', 'build')));
-// app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use(express.static('public'));
 
 const httpServer = http.createServer(app);
-const options = { cors: { origin: "*" } }; // allows any url to connect to the server
+const options = {};
 const io = socketIo(httpServer, options);
 
 const botName = "Server Bot";
@@ -196,7 +181,7 @@ app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "..", "build", "index.html"));
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 httpServer.listen(port, () =>
   console.log(`Listening on http://localhost:${port}`)
 );

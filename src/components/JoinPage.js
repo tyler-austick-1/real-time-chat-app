@@ -26,6 +26,7 @@ export default function JoinPage() {
         <label htmlFor="username-field">Username</label>
         <input
           id="username-field"
+          className="text-field"
           type="text"
           value={username}
           onChange={handleNameChange}

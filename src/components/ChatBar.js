@@ -21,7 +21,7 @@ export default function ChatBar({socket}) {
     return (
         <div id="chat-form">
             <form onSubmit={handleSubmit}>
-                <input id="chat-input" type="text" value={chatText} onChange={handleChange} autoComplete="off"></input>
+                <input id="chat-input" className="text-field" type="text" value={chatText} onChange={handleChange} autoComplete="off"></input>
                 <button id="send-button" type="submit">
                     <FontAwesomeIcon id="send-icon" icon={faPaperPlane} size="lg"/>
                 </button>

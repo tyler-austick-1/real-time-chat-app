@@ -6,8 +6,7 @@ import TaskBar from './TaskBar';
 import QueryString from "qs";
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:5000";
-const socket = io.connect(ENDPOINT);
+const socket = io.connect();
 
 export default function ChatRoom() {
   const {username, room} = QueryString.parse(window.location.search, {

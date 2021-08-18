@@ -1,17 +1,21 @@
+body {
+    background-color: var(--inbetween-gray);
+}
+
 #join-room-content {
     display: flex;
     flex-direction: column;
     width: 300px;
-    /* height: 200px; */
-    border: 1px solid lightgray;
     border-radius: 20px;
-    padding: 10px;
+    padding: 30px;
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 49%;
+    top: 48%;
     margin-left: -150px;
     margin-top: 35vh;
-    /* margin-top: -100px; */
+    color: black;
+    /* background-image: linear-gradient(to right top, #e66465, #9198e5); */
+    background-image: linear-gradient(to right top, var(--sender-color), var(--others-color));
 }
 
 #join-form {
@@ -21,15 +25,24 @@
 }
 
 #username-field {
-    height: 20px;
+    height: 27px;
 }
 
 #join-button {
     width: fit-content;
     height: fit-content;
-    padding: 5px;
+    padding: 8px;
+    border-radius: 12px;
+    border: none;
+    transition: all .2s ease-in;
+    background-color: white;
 }
 
 #join-button:hover {
     cursor: pointer;
+}
+
+#room-select {
+    height: 30px;
+    background-color: white;
 }
