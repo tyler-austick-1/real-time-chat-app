@@ -21,7 +21,7 @@ const io = socketIo(httpServer, options);
 const botName = "Server Bot";
 const botId = "";
 
-// Database stuff
+// MongoDb connection for storing messages
 const connectionURL =
   "mongodb+srv://admin:iluEzLM0RpwtcvhC@cluster0.mzxqx.mongodb.net/chatAppDatabase?retryWrites=true&w=majority";
 const databaseOptions = {
@@ -30,7 +30,6 @@ const databaseOptions = {
   useUnifiedTopology: true,
 };
 
-// Connects to the database
 mongoose.connect(connectionURL, databaseOptions);
 
 const db = mongoose.connection;
@@ -42,6 +41,8 @@ db.once("open", () => {
   const messagesCollection = db.collection("messages");
   const changeStream = messagesCollection.watch();
 
+  // When a new message is stored to the database, emit message event
+  // to the corresponding room.
   changeStream.on("change", (change) => {
     if (change.operationType === "insert") {
       const messageContents = change.fullDocument;
@@ -64,14 +65,18 @@ db.once("open", () => {
   });
 });
 
-// Socket.io stuff
+// Socket.io connection for bi-directional real time communication
 io.on("connection", (socket) => {
+
   socket.on("joinRoom", ({ username, room }) => {
+    // New user is stored (in users.js)
     const user = userJoin(socket.id, username, room);
     socket.join(user.room);
 
+    // Retrieve room's previous messages from database
     const roomMessagesQuery = messageModel.find({ room: user.room }).exec();
 
+    // Emit loadedMessages event with the formatted messages
     roomMessagesQuery
       .then((data) => {
         const loadedMessages = data.map((m) =>
@@ -86,6 +91,7 @@ io.on("connection", (socket) => {
         sendBotMessages(socket, user);
       });
 
+    // Emit roomUsers event to show newly joined user
     io.to(user.room).emit("roomUsers", {
       room: user.room,
       users: getRoomUsers(user.room),
@@ -101,6 +107,7 @@ io.on("connection", (socket) => {
       message
     );
 
+    // Store the new message in the database
     messageModel.create(formattedMessage, (err, data) => {
       if (err) return console.log(`An error has occured...${err}`);
 
@@ -109,6 +116,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    // Remove the current user from the users list (in users.js)
     const user = userLeave(socket.id);
 
     if (user) {
@@ -122,6 +130,7 @@ io.on("connection", (socket) => {
         )
       );
 
+      // Emit roomUsers event to show that the user has left
       io.to(user.room).emit("roomUsers", {
         room: user.room,
         users: getRoomUsers(user.room),
@@ -148,33 +157,6 @@ function sendBotMessages(socket, user) {
       )
     );
 }
-
-// API routes
-app.post("/api/messages", (req, res) => {
-  const messageData = req.body;
-
-  messageModel.create(messageData, (err, data) => {
-    if (err) return res.status(500).send(err);
-
-    return res.status(201).send(data);
-  });
-});
-
-app.get("/api/messages", (req, res) => {
-  messageModel.find((err, data) => {
-    if (err) return res.status(500).send(err);
-
-    return res.status(200).send(data);
-  });
-});
-
-app.get("/api/messages/:room", (req, res) => {
-  messageModel.find({ room: req.params.room }, (err, data) => {
-    if (err) return res.status(500).send(err);
-
-    return res.status(200).send(data);
-  });
-});
 
 // If no api route is found, then pass the request to the react app
 app.use((req, res, next) => {
