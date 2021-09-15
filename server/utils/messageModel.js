@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Schema for how messages should be stored in the db
 const messageSchema = mongoose.Schema({
     user_id: String,
     username: String,

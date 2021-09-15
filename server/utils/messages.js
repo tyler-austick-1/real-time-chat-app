@@ -1,6 +1,6 @@
 const luxon = require('luxon');
 
-// MIGHT NEED TO ADD ROOM
+// Formats the messages for sending to the frontend
 function formatMessage(userId, username, text, date) {
     return {
         userId,
@@ -10,6 +10,7 @@ function formatMessage(userId, username, text, date) {
     }
 }
 
+// Formats the messages for sending to the db
 function formatMessageForDb(user_id, username, room, message) {
     return {
         user_id,

@@ -3,7 +3,7 @@ import "../css/JoinPage.css";
 
 export default function JoinPage() {
   const [username, setUsername] = useState("");
-  const [room, setRoom] = useState("java");
+  const [room, setRoom] = useState("alpha");
 
   function handleNameChange(event) {
     setUsername(event.target.value);
@@ -35,10 +35,10 @@ export default function JoinPage() {
         ></input>
         <label htmlFor="room-select">Room</label>
         <select id="room-select" value={room} onChange={handleRoomChange}>
-          <option value="java">Java</option>
-          <option value="python">Python</option>
-          <option value="dart">Dart</option>
-          <option value="kotlin">Kotlin</option>
+          <option value="alpha">Alpha</option>
+          <option value="beta">Beta</option>
+          <option value="gamma">Gamma</option>
+          <option value="delta">Delta</option>
         </select>
         <br></br>
         <input id="join-button" type="submit" value="Join"></input>
