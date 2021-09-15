@@ -2,7 +2,7 @@
 
 ## Contents
 
-- [Techonologies Used](#technologies-used)
+- [Technologies Used](#technologies-used)
     - [Front End](#front-end)
     - [Back End](#front-end)
 - [Description](#description)
@@ -48,7 +48,7 @@ This is the landing page of the site. Users enter a username and select a room t
 
 <img src="https://github.com/tyler-austick-1/real-time-chat-app/blob/main/images/chat_room_page.png" alt="Chat Page">
 
-This is the chat room page displayed once the user has connected through The Join Page. 
+This is the chat room page displayed once the user has connected through [The Join Page](#the-join-page). 
 
 - The top left displays which room the user is currently connected to. 
 - The icon in the top right allows users to leave the room. 
